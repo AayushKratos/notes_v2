@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:note/colors.dart';
 import 'package:note/model/note_model.dart';
 import 'package:note/services.dart/sql.dart';
@@ -92,76 +91,82 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
-  Widget NoteSectionAll() {
-    return Container(
-        child: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    "SEARCH RESULTS",
-                    style: TextStyle(
-                        color: white.withOpacity(0.5),
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold),
+ Widget NoteSectionAll() {
+  return Container(
+    child: Column(
+      children: [
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                "SEARCH RESULTS",
+                style: TextStyle(
+                  color: white.withOpacity(0.5),
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 15,
+          ),
+          child: GridView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 0.5, // Adjust this ratio based on your layout needs
+            ),
+            itemCount: SearchResultNotes.length,
+            itemBuilder: (context, index) => InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NoteView(note: SearchResultNotes[index]),
                   ),
-                ],
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: white.withOpacity(0.4)),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      SearchResultNotes[index]!.title,
+                      style: TextStyle(
+                        color: white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      SearchResultNotes[index]!.content.length > 250
+                          ? "${SearchResultNotes[index]!.content.substring(0, 250)}..."
+                          : SearchResultNotes[index]!.content,
+                      style: TextStyle(color: white),
+                    ),
+                  ],
+                ),
               ),
             ),
-            Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 15,
-                ),
-                child: StaggeredGridView.countBuilder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: SearchResultNotes.length,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    crossAxisCount: 4,
-                    staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                    itemBuilder: (context, index) =>
-                        InkWell(
-                          onTap: ()
-                          {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => NoteView(note: SearchResultNotes[index])));
-                          },
-                          child:
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: white.withOpacity(0.4)),
-                                borderRadius: BorderRadius.circular(7)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(SearchResultNotes[index]!.title,
-                                    style: TextStyle(
-                                        color: white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold)),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(SearchResultNotes[index]!.content.length > 250
-                                    ? "${SearchResultNotes[index]!.content.substring(0, 250)}..."
-                                    : SearchResultNotes[index]!.content,
-
-                                  style: TextStyle(color: white),
-                                )
-                              ],
-                            ),
-                          ),
-
-                        )
-                )
-            ),
-          ],
-        )
-    );
-  }
+          ),
+        ),
+      ],
+    ),
+  );
+}
 }

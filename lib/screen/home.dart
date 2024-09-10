@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:note/colors.dart';
@@ -14,6 +13,8 @@ import 'package:note/screen/sidebar.dart';
 import 'package:note/services.dart/auth.dart';
 import 'package:note/services.dart/firestore.dart';
 import 'package:note/services.dart/sql.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -46,7 +47,6 @@ class _HomeState extends State<Home> {
   }
 
   Future getAllNotes() async {
-
     LocalDataSaver.getImg().then((value) {
       if (this.mounted) {
         setState(() {
@@ -79,43 +79,43 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return isLoading
         ? Scaffold(
-      backgroundColor: bgColor,
-      body: Center(
-        child: CircularProgressIndicator(
-          color: Colors.white,
-        ),
-      ),
-    )
+            backgroundColor: bgColor,
+            body: Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            ),
+          )
         : Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CreateNoteView()));
-          },
-          backgroundColor: cardColor,
-          child: Icon(
-            Icons.add,
-            size: 45,
-          ),
-        ),
-        endDrawerEnableOpenDragGesture: true,
-        key: _drawerKey,
-        drawer: SideMenu(),
-        backgroundColor: bgColor,
-        body: RefreshIndicator(
-          onRefresh: () {
-            return Future.delayed(Duration(seconds: 1), () {
-              /// adding elements in list after [1 seconds] delay
-              /// to mimic network call
-              ///
-              /// Remember: [setState] is necessary so that
-              /// build method will run again otherwise
-              /// list will not show all elements
-              setState(() {});
-            });
-          },
-          child: SafeArea(
-              child: SingleChildScrollView(
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => CreateNoteView()));
+              },
+              backgroundColor: cardColor,
+              child: Icon(
+                Icons.add,
+                size: 45,
+              ),
+            ),
+            endDrawerEnableOpenDragGesture: true,
+            key: _drawerKey,
+            drawer: SideMenu(),
+            backgroundColor: bgColor,
+            body: RefreshIndicator(
+              onRefresh: () {
+                return Future.delayed(Duration(seconds: 1), () {
+                  /// adding elements in list after [1 seconds] delay
+                  /// to mimic network call
+                  ///
+                  /// Remember: [setState] is necessary so that
+                  /// build method will run again otherwise
+                  /// list will not show all elements
+                  setState(() {});
+                });
+              },
+              child: SafeArea(
+                  child: SingleChildScrollView(
                 child: Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,13 +161,14 @@ class _HomeState extends State<Home> {
                                       child: Container(
                                           height: 55,
                                           width: MediaQuery.of(context)
-                                              .size
-                                              .width/3,
+                                                  .size
+                                                  .width /
+                                              3,
                                           child: Column(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                                  MainAxisAlignment.center,
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   "Search Your Notes",
@@ -188,20 +189,22 @@ class _HomeState extends State<Home> {
                                           style: ButtonStyle(
                                               overlayColor: MaterialStateColor
                                                   .resolveWith((states) =>
-                                                  white.withOpacity(0.1)),
+                                                      white.withOpacity(0.1)),
                                               shape: MaterialStateProperty.all<
-                                                  RoundedRectangleBorder>(
+                                                      RoundedRectangleBorder>(
                                                   RoundedRectangleBorder(
-                                                    borderRadius:
+                                                borderRadius:
                                                     BorderRadius.circular(50.0),
-                                                  ))),
+                                              ))),
                                           onPressed: () {
                                             setState(() {
-                                              isStaggered = !isStaggered ;
+                                              isStaggered = !isStaggered;
                                             });
                                           },
                                           child: Icon(
-                                            isStaggered! ? Icons.list : Icons.grid_view,
+                                            isStaggered!
+                                                ? Icons.list
+                                                : Icons.grid_view,
                                             //Icons.grid_view,
                                             color: white,
                                           )),
@@ -211,7 +214,8 @@ class _HomeState extends State<Home> {
                                       GestureDetector(
                                         onTap: () async {
                                           // Check if the user is already signed in
-                                          final User? currentUser = await _auth.currentUser;
+                                          final User? currentUser =
+                                              await _auth.currentUser;
                                           if (currentUser != null) {
                                             // User is signed in, so sign them out
                                             await googleSignIn.signOut();
@@ -219,90 +223,101 @@ class _HomeState extends State<Home> {
                                             // Save login data to local storage
                                             LocalDataSaver.saveLoginData(false);
                                             // Show toast message
-                                            Fluttertoast.showToast(msg: "Logged out");
+                                            Fluttertoast.showToast(
+                                                msg: "Logged out");
                                             // Update UI
                                             setState(() {
-                                              ImgUrl = 'default image url'; // Set default image url
+                                              ImgUrl =
+                                                  'default image url'; // Set default image url
                                             });
                                           } else {
                                             // User is not signed in, so sign them in
                                             await signInWithGoogle();
                                             // Get the user's information
-                                            final User? currentUser = await _auth.currentUser;
+                                            final User? currentUser =
+                                                await _auth.currentUser;
                                             LocalDataSaver.saveLoginData(true);
-                                            LocalDataSaver.saveImg(currentUser!.photoURL.toString());
-                                            LocalDataSaver.saveMail(currentUser.email.toString());
-                                            LocalDataSaver.saveName(currentUser.displayName.toString());
+                                            LocalDataSaver.saveImg(currentUser!
+                                                .photoURL
+                                                .toString());
+                                            LocalDataSaver.saveMail(
+                                                currentUser.email.toString());
+                                            LocalDataSaver.saveName(currentUser
+                                                .displayName
+                                                .toString());
                                             LocalDataSaver.saveSyncSet(false);
                                             await FireDB().getAllStoredNotes();
                                             // Show toast message
-                                            Fluttertoast.showToast(msg: "Logged in");
+                                            Fluttertoast.showToast(
+                                                msg: "Logged in");
                                             // Update UI
                                             setState(() {
-                                              ImgUrl = currentUser.photoURL.toString(); // Set user's photo url
+                                              ImgUrl = currentUser.photoURL
+                                                  .toString(); // Set user's photo url
                                             });
                                             // Navigate to the home screen
                                             Navigator.pushReplacement(
                                               context,
-                                              MaterialPageRoute(builder: (context) => Home()),
+                                              MaterialPageRoute(
+                                                  builder: (context) => Home()),
                                             );
                                           }
                                         },
                                         child: CircleAvatar(
-                                          onBackgroundImageError: (Object, StackTrace) {
+                                          onBackgroundImageError:
+                                              (Object, StackTrace) {
                                             print("Ok");
                                           },
                                           radius: 16,
-                                          backgroundImage: NetworkImage(ImgUrl.toString()),
+                                          backgroundImage:
+                                              NetworkImage(ImgUrl.toString()),
                                         ),
                                       ),
-
                                     ],
                                   ),
                                 ),
                               ])),
-                      isStaggered ?  NoteSectionAll() :
-                      NotesListSection()
+                      isStaggered ? NoteSectionAll() : NotesListSection()
                     ],
                   ),
                 ),
               )),
-        ));
+            ));
   }
 
   Widget NoteSectionAll() {
     return Container(
         child: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    "ALL",
-                    style: TextStyle(
-                        color: white.withOpacity(0.5),
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
+      children: [
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                "ALL",
+                style: TextStyle(
+                    color: white.withOpacity(0.5),
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold),
               ),
+            ],
+          ),
+        ),
+        Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 15,
             ),
-            Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 15,
-                ),
-                child: StaggeredGridView.countBuilder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: notesList.length,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    crossAxisCount: 4,
-                    staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                    itemBuilder: (context, index) => InkWell(
+            child: StaggeredGridView.countBuilder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: notesList.length,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                crossAxisCount: 4,
+                staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                itemBuilder: (context, index) => InkWell(
                       onTap: () {
                         Navigator.push(
                             context,
@@ -336,66 +351,66 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ))),
-          ],
-        ));
+      ],
+    ));
   }
 
   Widget NotesListSection() {
     return Container(
         child: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    "ALL",
-                    style: TextStyle(
-                        color: white.withOpacity(0.5),
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
+      children: [
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                "ALL",
+                style: TextStyle(
+                    color: white.withOpacity(0.5),
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold),
               ),
+            ],
+          ),
+        ),
+        Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 15,
             ),
-            Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 15,
-                ),
-                child: ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: notesList.length,
-                  itemBuilder: (context, index) => Container(
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: white.withOpacity(0.4)),
-                        borderRadius: BorderRadius.circular(7)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(notesList[index].title,
-                            style: TextStyle(
-                                color: white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold)),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          notesList[index].content.length > 250
-                              ? "${notesList[index].content.substring(0, 250)}..."
-                              : notesList[index].content,
-                          style: TextStyle(color: white),
-                        )
-                      ],
+            child: ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: notesList.length,
+              itemBuilder: (context, index) => Container(
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                    border: Border.all(color: white.withOpacity(0.4)),
+                    borderRadius: BorderRadius.circular(7)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(notesList[index].title,
+                        style: TextStyle(
+                            color: white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                    SizedBox(
+                      height: 10,
                     ),
-                  ),
-                )),
-          ],
-        ));
+                    Text(
+                      notesList[index].content.length > 250
+                          ? "${notesList[index].content.substring(0, 250)}..."
+                          : notesList[index].content,
+                      style: TextStyle(color: white),
+                    )
+                  ],
+                ),
+              ),
+            )),
+      ],
+    ));
   }
 }

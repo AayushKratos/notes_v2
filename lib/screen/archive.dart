@@ -1,12 +1,12 @@
-import 'dart:ui';
 import 'package:note/colors.dart';
 import 'package:note/model/note_model.dart';
 import 'package:note/screen/createnoteview.dart';
 import 'package:note/screen/login_info.dart';
 import 'package:note/screen/search.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:note/screen/sidebar.dart';
 import 'package:note/services.dart/sql.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 import 'NoteView.dart';
 import 'package:flutter/material.dart';
 
