@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:note/Screen/archive.dart';
 import 'package:note/colors.dart';
 import 'package:note/screen/settings.dart';
-
 import 'home.dart';
 
 class SideMenu extends StatefulWidget {

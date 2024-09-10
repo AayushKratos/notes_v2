@@ -11,6 +11,20 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   late bool value;
+  bool isSyncOn = false;
+  
+  void loadSyncStatus() async {
+    isSyncOn = (await LocalDataSaver.getSyncSet())!;
+    setState(() {});
+  }
+
+  // Toggle sync and save the setting
+  void toggleSync(bool enableSync) async {
+    await LocalDataSaver.saveSyncSet(enableSync);
+    setState(() {
+      isSyncOn = enableSync;
+    });
+  }
   getSyncSet() async{
     LocalDataSaver.getSyncSet().then((valueFromDB){
       setState(() {
