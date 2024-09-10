@@ -13,6 +13,7 @@ import 'package:note/screen/sidebar.dart';
 import 'package:note/services.dart/auth.dart';
 import 'package:note/services.dart/firestore.dart';
 import 'package:note/services.dart/sql.dart';
+import 'package:note/services.dart/sync_services.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
@@ -42,10 +43,19 @@ class _HomeState extends State<Home> {
     //LocalDataSaver.saveSyncSet(true);
   }
 
+  void refreshNotes() async {
+    await SyncService().syncNotes();
+    setState(() {
+      // Refresh UI after sync
+    });
+  }
+
+  //creates a new note in the database
   Future createEntry(Note note) async {
     await NotesDatabse.instance.InsertEntry(note);
   }
 
+  //fetches the image URL and notes from the local storage
   Future getAllNotes() async {
     LocalDataSaver.getImg().then((value) {
       if (this.mounted) {
@@ -63,14 +73,17 @@ class _HomeState extends State<Home> {
     }
   }
 
+  //reads a single note from the database by its ID
   Future getOneNote(int id) async {
     await NotesDatabse.instance.readOneNote(id);
   }
 
+  //updates an existing note
   Future updateOneNote(Note note) async {
     await NotesDatabse.instance.updateNote(note);
   }
 
+  //deletes the note from the database
   Future deleteNote(Note note) async {
     await NotesDatabse.instance.delteNote(note);
   }
@@ -285,6 +298,7 @@ class _HomeState extends State<Home> {
             ));
   }
 
+  //used to display in grid format
   Widget NoteSectionAll() {
     return Container(
         child: Column(
@@ -318,6 +332,7 @@ class _HomeState extends State<Home> {
                 crossAxisCount: 4,
                 staggeredTileBuilder: (index) => StaggeredTile.fit(2),
                 itemBuilder: (context, index) => InkWell(
+                      //Wraps each note to handle tap events
                       onTap: () {
                         Navigator.push(
                             context,
@@ -355,6 +370,7 @@ class _HomeState extends State<Home> {
     ));
   }
 
+  //displays notes in list format
   Widget NotesListSection() {
     return Container(
         child: Column(

@@ -16,6 +16,7 @@ class NotesDatabse {
     return _database;
   }
 
+  //initiliases the database
   Future<Database> _initializeDB(String filepath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filepath);
@@ -23,6 +24,7 @@ class NotesDatabse {
     return await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
+  //creates the notes database
   Future _createDB(Database db, int version) async {
     final idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     final boolType = ' BOOLEAN NOT NULL';
@@ -40,6 +42,7 @@ class NotesDatabse {
     ''');
   }
 
+  //inserts a note
   Future<Note?> InsertEntry(Note note) async {
     final db = await instance.database;
     final id = await db!.insert(NotesImpNames.TableName, note.toJson());
@@ -47,6 +50,7 @@ class NotesDatabse {
     return note.copy(id: id);
   }
 
+  //retrieves all the notes
   Future<List<Note>> readAllNotes() async {
     final db = await instance.database;
     final orderBy = '${NotesImpNames.createdTime} ASC';
@@ -55,6 +59,7 @@ class NotesDatabse {
     return query_result.map((json) => Note.fromJson(json)).toList();
   }
 
+  //retrieves archived notes 
   Future<List<Note>> readArchivedNotes() async {
     final db = await instance.database;
     final orderBy = '${NotesImpNames.createdTime} ASC';
@@ -63,6 +68,7 @@ class NotesDatabse {
     return query_result.map((json) => Note.fromJson(json)).toList();
   }
 
+  //retrieves the note from database using the ID
   Future<Note?> readOneNote(int id) async {
     final db = await instance.database;
     final map = await db!.query(NotesImpNames.TableName,
@@ -75,18 +81,22 @@ class NotesDatabse {
       return null;
     }
   }
+
+  //pins the note
   Future pinNote(Note? note) async {
     final db = await instance.database;
     await db!.update(NotesImpNames.TableName, {NotesImpNames.pin : !note!.pin ? 1 : 0},
         where: '${NotesImpNames.id} = ?', whereArgs: [note!.id]);
   }
 
+  //toggles the archive note
   Future aechivedNote(Note? note) async {
     final db = await instance.database;
     await db!.update(NotesImpNames.TableName, {NotesImpNames.isArchived : !note!.isArchived ? 1 : 0},
         where: '${NotesImpNames.id} = ?', whereArgs: [note!.id]);
   }
 
+  //updates the note
   Future updateNote(Note note) async {
     await FireDB().updateNoteFirestore(note);
     final db = await instance.database;
@@ -94,6 +104,7 @@ class NotesDatabse {
         where: '${NotesImpNames.id} = ?', whereArgs: [note.id]);
   }
 
+  //deletes the note
   Future delteNote(Note? note) async {
     await FireDB().deleteNoteFirestore(note!);
     final db = await instance.database;
@@ -101,6 +112,7 @@ class NotesDatabse {
         where: '${NotesImpNames.id}= ?', whereArgs: [note.id]);
   }
 
+  //searches the note
   Future<List<int>> getNoteString(String query) async {
     final db = await instance.database;
     if (db == null) {

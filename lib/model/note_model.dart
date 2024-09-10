@@ -1,3 +1,4 @@
+//constants to be used
 class NotesImpNames {
   static final String id = "id";
   static final String uniqueID = "uniqueID";
@@ -19,6 +20,7 @@ class Note {
   final String content;
   final DateTime createdTime;
 
+//constructor
   Note({
     this.id,
     required this.pin,
@@ -47,18 +49,8 @@ class Note {
         uniqueID: uniqueID ?? this.uniqueID,
         createdTime: createdTime ?? this.createdTime);
   }
-
-  static Note fromJson(Map<String, Object?> json) {
-    return Note(
-        id: json[NotesImpNames.id] as int?,
-        pin: json[NotesImpNames.pin] == 1,
-        isArchived: json[NotesImpNames.isArchived] == 1,
-        title: json[NotesImpNames.title] as String,
-        uniqueID: json[NotesImpNames.uniqueID] as String,
-        content: json[NotesImpNames.content] as String,
-        createdTime: DateTime.parse(json[NotesImpNames.createdTime] as String));
-  }
-
+  
+  //converts note instance to json map
   Map<String, Object?> toJson() {
     return {
       NotesImpNames.id: id,
@@ -70,4 +62,17 @@ class Note {
       NotesImpNames.createdTime: createdTime.toIso8601String()
     };
   }
+  
+  //creating note instance from json map
+  static Note fromJson(Map<String, Object?> json) {
+    return Note(
+        id: json[NotesImpNames.id] as int?,
+        pin: json[NotesImpNames.pin] == 1,
+        isArchived: json[NotesImpNames.isArchived] == 1,
+        title: json[NotesImpNames.title] as String,
+        uniqueID: json[NotesImpNames.uniqueID] as String,
+        content: json[NotesImpNames.content] as String,
+        createdTime: DateTime.parse(json[NotesImpNames.createdTime] as String));
+  }
+  
 }

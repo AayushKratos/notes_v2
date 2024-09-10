@@ -33,11 +33,13 @@ class _ArchiveViewState extends State<ArchiveView> {
     getAllNotes();
     LocalDataSaver.saveSyncSet(false);
   }
-
+  
+  //inserts a new note into the database
   Future createEntry(Note note) async {
     await NotesDatabse.instance.InsertEntry(note);
   }
-
+  
+  //fetches all the archived notes from database
   Future getAllNotes() async {
     LocalDataSaver.getImg().then((value) {
       if (this.mounted) {
@@ -54,15 +56,18 @@ class _ArchiveViewState extends State<ArchiveView> {
       });
     }
   }
-
+  
+  //reads a specific note from the database by its ID
   Future getOneNote(int id) async {
     await NotesDatabse.instance.readOneNote(id);
   }
 
+  ///updates an exisiting note
   Future updateOneNote(Note note) async {
     await NotesDatabse.instance.updateNote(note);
   }
-
+  
+  //deletes the note from the database
   Future deleteNote(Note note) async {
     await NotesDatabse.instance.delteNote(note);
   }
@@ -79,6 +84,7 @@ class _ArchiveViewState extends State<ArchiveView> {
             ),
           )
         : Scaffold(
+            //to navigate to the CreateNoteView Screen
             floatingActionButton: FloatingActionButton(
               onPressed: () {
                 Navigator.push(context,
@@ -92,20 +98,17 @@ class _ArchiveViewState extends State<ArchiveView> {
             ),
             endDrawerEnableOpenDragGesture: true,
             key: _drawerKey,
+            //Side menu for navigation
             drawer: SideMenu(),
             backgroundColor: bgColor,
+            //to refresh the notes
             body: RefreshIndicator(
               onRefresh: () {
                 return Future.delayed(Duration(seconds: 1), () {
-                  /// adding elements in list after [1 seconds] delay
-                  /// to mimic network call
-                  ///
-                  /// Remember: [setState] is necessary so that
-                  /// build method will run again otherwise
-                  /// list will not show all elements
                   setState(() {});
                 });
               },
+              //ensure the UI is in a safe area and allows scrolling the page
               child: SafeArea(
                   child: SingleChildScrollView(
                 child: Container(
@@ -128,7 +131,7 @@ class _ArchiveViewState extends State<ArchiveView> {
                               ]),
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
+                              children: [ 
                                 Row(
                                   children: [
                                     IconButton(
@@ -215,6 +218,7 @@ class _ArchiveViewState extends State<ArchiveView> {
             ));
   }
 
+  //Displays the note in a staggered format
   Widget NoteSectionAll() {
     return Container(
         child: Column(
@@ -286,6 +290,7 @@ class _ArchiveViewState extends State<ArchiveView> {
     ));
   }
 
+  //Displays the notes in a list format
   Widget NotesListSection() {
     return Container(
         child: Column(
