@@ -1,4 +1,4 @@
-
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:note/services.dart/fireDB.dart';
 import 'package:note/services.dart/firestore.dart';
 import 'package:note/services.dart/sql.dart';
@@ -14,6 +14,14 @@ class SyncService {
   // Function to synchronize notes between local database and Firebase
   Future<void> syncNotes() async {
     try {
+      // Check for internet connection
+      var connectivityResult = await (Connectivity().checkConnectivity());
+      
+      if (connectivityResult == ConnectivityResult.none) {
+        print("No internet connection. Cannot sync notes.");
+        return;
+      }
+
       // Fetch notes from Firebase
       final firebaseNotes = await FireDB().getAllStoredNotes();
 
