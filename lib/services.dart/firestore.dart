@@ -11,6 +11,7 @@ class FireDB {
 
   createNewNoteFirestore(Note note ) async {
     LocalDataSaver.getSyncSet().then((isSyncOn) async{
+      print(isSyncOn);
       if(isSyncOn.toString() == "true"){
         final User? current_user = _auth.currentUser;
         await FirebaseFirestore.instance
