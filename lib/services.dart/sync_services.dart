@@ -1,27 +1,39 @@
+import 'dart:developer';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:note/services.dart/fireDB.dart';
 import 'package:note/services.dart/firestore.dart';
 import 'package:note/services.dart/sql.dart';
 
 class SyncService {
+
+  bool? InternetConnectivityStatus = false;
   // Singleton pattern for SyncService
   static final SyncService _instance = SyncService._internal();
   
   factory SyncService() => _instance;
   
   SyncService._internal();
+
+  Future<void> initConnectivity() async{
+    Connectivity().onConnectivityChanged.listen((result) async {
+      if (result[0] == ConnectivityResult.mobile || result[0] == ConnectivityResult.wifi){
+        log("Network Connected Now");
+
+        if(InternetConnectivityStatus == false){
+          syncNotes();
+        }
+        InternetConnectivityStatus = true;
+      } else {
+          InternetConnectivityStatus = false;
+          log("Network Disconnected");
+        }
+      } 
+    );
+  }
   
   // Function to synchronize notes between local database and Firebase
   Future<void> syncNotes() async {
-    try {
-      // Check for internet connection
-      var connectivityResult = await (Connectivity().checkConnectivity());
-      
-      if (connectivityResult == ConnectivityResult.none) {
-        print("No internet connection. Cannot sync notes.");
-        return;
-      }
-
       // Fetch notes from Firebase
       final firebaseNotes = await FireDB().getAllStoredNotes();
 
@@ -43,8 +55,6 @@ class SyncService {
           await FireDb().addOrUpdateNote(note);
         }
       }
-    } catch (e) {
-      print("Error syncing notes: $e");
-    }
+    } 
   }
-}
+
