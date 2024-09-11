@@ -1,6 +1,6 @@
-# note
+# Notes app
 
-A new Flutter project.
+Notes app created using flutter and sqlite
 
 ## Getting Started
 
